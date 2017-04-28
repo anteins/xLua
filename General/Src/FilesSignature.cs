@@ -47,10 +47,17 @@ namespace XLua
                 return;
             }
 
-            SHA1 sha = new SHA1CryptoServiceProvider();
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            rsa.FromXmlString(File.ReadAllText("key_ras"));
-            doSignature(args[0], args[1], sha, rsa);
+            try
+            {
+                SHA1 sha = new SHA1CryptoServiceProvider();
+                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                rsa.FromXmlString(File.ReadAllText("key_ras"));
+                doSignature(args[0], args[1], sha, rsa);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception in FilesSignature: " + e);
+            }
         }
     }
 }

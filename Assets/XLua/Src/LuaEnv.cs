@@ -418,7 +418,10 @@ namespace XLua
 
                 // A non-wrapped Lua error (best interpreted as a string) - wrap it and throw it
                 if (err == null) err = "Unknown Lua Error";
-                throw new LuaException(err.ToString());
+
+				Eight.Framework.EIFrameWork.GetComponent< EightGame.Component.XLuaComponent > ().CatchError (err.ToString());
+
+                //throw new LuaException(err.ToString());
 #if THREAD_SAFT || HOTFIX_ENABLE
             }
 #endif
