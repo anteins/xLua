@@ -31,6 +31,19 @@ find_path(XLUA_PROJECT_DIR NAMES SConstruct
 
 MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
 
+#begin lua-lfs
+set (LFS_SRC lua-lfs/source/lfs.c)
+set_property(
+    SOURCE ${LFS_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lua-lfs/include)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${LFS_SRC})
+#end lua-lfs
+
+
 if (USING_LUAJIT)
 	
     if (APPLE AND NOT IOS)
