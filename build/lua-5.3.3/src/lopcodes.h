@@ -167,14 +167,12 @@ typedef enum {
 name		args	description
 ------------------------------------------------------------------------*/
 OP_MOVE,/*	A B	R(A) := R(B)					*/
-OP_LOADK,/*	A Bx	R(A) := Kst(Bx)					*/
-OP_LOADKX,/*	A 	R(A) := Kst(extra arg)				*/
-OP_LOADBOOL,/*	A B C	R(A) := (Bool)B; if (C) pc++			*/
-OP_LOADNIL,/*	A B	R(A), R(A+1), ..., R(A+B) := nil		*/
-OP_GETUPVAL,/*	A B	R(A) := UpValue[B]				*/
+OP_GETUPVAL,/*  A B R(A) := UpValue[B]        */
 
-OP_GETTABUP,/*	A B C	R(A) := UpValue[B][RK(C)]			*/
-OP_GETTABLE,/*	A B C	R(A) := R(B)[RK(C)]				*/
+OP_GETTABUP,/*  A B C R(A) := UpValue[B][RK(C)]     */
+OP_GETTABLE,/*  A B C R(A) := R(B)[RK(C)]       */
+
+
 
 OP_SETTABUP,/*	A B C	UpValue[A][RK(B)] := RK(C)			*/
 OP_SETUPVAL,/*	A B	UpValue[B] := R(A)				*/
@@ -192,6 +190,10 @@ OP_POW,/*	A B C	R(A) := RK(B) ^ RK(C)				*/
 OP_DIV,/*	A B C	R(A) := RK(B) / RK(C)				*/
 OP_IDIV,/*	A B C	R(A) := RK(B) // RK(C)				*/
 OP_BAND,/*	A B C	R(A) := RK(B) & RK(C)				*/
+OP_LOADK,/* A Bx  R(A) := Kst(Bx)         */
+OP_LOADKX,/*  A   R(A) := Kst(extra arg)        */
+OP_LOADBOOL,/*  A B C R(A) := (Bool)B; if (C) pc++      */
+OP_LOADNIL,/* A B R(A), R(A+1), ..., R(A+B) := nil    */
 OP_BOR,/*	A B C	R(A) := RK(B) | RK(C)				*/
 OP_BXOR,/*	A B C	R(A) := RK(B) ~ RK(C)				*/
 OP_SHL,/*	A B C	R(A) := RK(B) << RK(C)				*/
