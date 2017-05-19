@@ -204,11 +204,11 @@ namespace XLua
             }
 #endif
             assemblies = new List<Assembly>();
-            assemblies.Add(Assembly.GetExecutingAssembly());
 
 #if UNITY_WSA && !UNITY_EDITOR
             var assemblies_usorted = Utils.GetAssemblies();
 #else
+            assemblies.Add(Assembly.GetExecutingAssembly());
             var assemblies_usorted = AppDomain.CurrentDomain.GetAssemblies();
 #endif
             addAssemblieByName(assemblies_usorted, "mscorlib,");
@@ -1116,7 +1116,8 @@ namespace XLua
 #if !UNITY_5 && !XLUA_GENERAL
                 if (obj != null && obj is UnityEngine.Object && ((obj as UnityEngine.Object) == null))
                 {
-                    throw new UnityEngine.MissingReferenceException("The object of type '"+ obj.GetType().Name +"' has been destroyed but you are still trying to access it.");
+                    //throw new UnityEngine.MissingReferenceException("The object of type '"+ obj.GetType().Name +"' has been destroyed but you are still trying to access it.");
+                    return null;
                 }
 #endif
                 return obj;
