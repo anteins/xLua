@@ -49,7 +49,7 @@ namespace XLua
         internal object luaEnvLock = new object();
 #endif
 
-        const int LIB_VERSION_EXPECT = 101;
+        const int LIB_VERSION_EXPECT = 102;
 
         public LuaEnv()
         {
@@ -390,10 +390,7 @@ namespace XLua
                 LuaAPI.lua_close(L);
 
                 ObjectTranslatorPool.Instance.Remove(L);
-                if (translator != null)
-                {
-                    translator = null;
-                }
+                translator = null;
 
                 rawL = IntPtr.Zero;
 
