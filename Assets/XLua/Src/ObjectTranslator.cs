@@ -674,6 +674,11 @@ namespace XLua
                 object obj;
                 if (udata != -1 && objects.TryGetValue(udata, out obj))
                 {
+                    RawObject rawObject = obj as RawObject;
+                    if (rawObject != null)
+                    {
+                        obj = rawObject.Target;
+                    }
                     return type.IsAssignableFrom(obj.GetType());
                 }
 
@@ -694,7 +699,9 @@ namespace XLua
 
             if (udata != -1)
             {
-                return objects.Get(udata);
+                object obj = objects.Get(udata);
+                RawObject rawObject = obj as RawObject;
+                return rawObject == null ? obj : rawObject.Target;
             }
             else
             {
@@ -964,25 +971,13 @@ namespace XLua
                 int ival = (int)LuaAPI.lua_tonumber(L, idx);
                 res = Enum.ToObject(type, ival);
             }
-            else
-            if (lt == LuaTypes.LUA_TSTRING)
+            else if (lt == LuaTypes.LUA_TSTRING)
             {
                 string sflags = LuaAPI.lua_tostring(L, idx);
-                string err = null;
-                try
-                {
-                    res = Enum.Parse(type, sflags);
-                }
-                catch (ArgumentException e)
-                {
-                    err = e.Message;
-                }
-                if (err != null)
-                {
-                    return LuaAPI.luaL_error(L, err);
-                }
+                res = Enum.Parse(type, sflags);
             }
-            else {
+            else 
+            {
                 return LuaAPI.luaL_error(L, "#1 argument must be a integer or a string");
             }
             PushAny(L, res);
