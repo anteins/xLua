@@ -1206,7 +1206,9 @@ namespace CSObjectWrapEditor
             {
                 object[] ccla = test.GetCustomAttributes(typeof(LuaCallCSharpAttribute), false);
                 AddToList(LuaCallCSharp, get_cfg, ccla[0]);
+#pragma warning disable 618
                 if (ccla.Length == 1 && (((ccla[0] as LuaCallCSharpAttribute).Flag & GenFlag.GCOptimize) != 0))
+#pragma warning restore 618
                 {
                     AddToList(GCOptimizeList, get_cfg, ccla[0]);
                 }
@@ -1486,6 +1488,10 @@ namespace CSObjectWrapEditor
                 catch (Exception e)
                 {
                     Debug.LogError("gen file fail! template=" + template_src + ", err=" + e.Message + ", stack=" + e.StackTrace);
+                }
+                finally
+                {
+                    gen_task.Output.Close();
                 }
             }
         }
