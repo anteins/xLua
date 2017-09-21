@@ -350,6 +350,11 @@ namespace XLua
 
         static LuaCSFunction genItemSetter(Type type, PropertyInfo[] props)
         {
+            props = props.Where(prop => !prop.GetIndexParameters()[0].ParameterType.IsAssignableFrom(typeof(string))).ToArray();
+            if (props.Length == 0)
+            {
+                return null;
+            }
             Type[] params_type = new Type[props.Length];
             for (int i = 0; i < props.Length; i++)
             {
@@ -1515,7 +1520,7 @@ namespace XLua
                     if (parameterConstraints.Length == 0) return false;
                     foreach (var parameterConstraint in parameterConstraints)
                     {
-                        if (!parameterConstraint.IsClass || (parameterConstraint == typeof(ValueType)))
+                        if (!parameterConstraint.IsClass() || (parameterConstraint == typeof(ValueType)))
                             return false;
                     }
                     hasValidGenericParameter = true;
