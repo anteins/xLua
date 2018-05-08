@@ -106,20 +106,36 @@ public class InnerTypeTest
     }
 }
 
-public class BaseTestBase
+public class BaseTestHelper
+{
+    
+}
+
+public class BaseTestBase<T> : BaseTestHelper
 {
     public virtual void Foo(int p)
     {
-        Debug.Log("BaseTestBase.Foo, p = " + p);
+        Debug.Log("BaseTestBase<>.Foo, p = " + p);
     }
 }
 
 [Hotfix]
-public class BaseTest : BaseTestBase
+[LuaCallCSharp]
+public class BaseTest : BaseTestBase<InnerTypeTest>
 {
     public override void Foo(int p)
     {
-        Debug.Log("BaseTest.Foo, p = " + p);
+        Debug.Log("BaseTest<>.Foo, p = " + p);
+    }
+
+    public void Proxy(int p)
+    {
+        base.Foo(p);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString();
     }
 }
 
@@ -136,9 +152,19 @@ public struct StructTest
     {
         return go;
     }
+
+    public override string ToString()
+    {
+        return base.ToString();
+    }
+
+    public string Proxy()
+    {
+        return base.ToString();
+    }
 }
 
-[Hotfix(HotfixFlag.Stateful)]
+[Hotfix]
 public struct GenericStruct<T>
 {
     T a;
@@ -253,16 +279,17 @@ public class HotfixTest2 : MonoBehaviour {
         System.GC.Collect();
         System.GC.WaitForPendingFinalizers();
         luaenv.DoString(@"
+            local util = require 'xlua.util'
             xlua.hotfix(CS.StatefullTest, {
                 ['.ctor'] = function(csobj)
-                    return {evt = {}, start = 0}
+                    util.state(csobj, {evt = {}, start = 0, prop = 0})
                 end;
                 set_AProp = function(self, v)
                     print('set_AProp', v)
-                    self.AProp = v
+                    self.prop = v
                 end;
                 get_AProp = function(self)
-                    return self.AProp
+                    return self.prop
                 end;
                 get_Item = function(self, k)
                     print('get_Item', k)
@@ -369,16 +396,21 @@ public class HotfixTest2 : MonoBehaviour {
         }
 
 
-        BaseTestBase bt = new BaseTest();
+        BaseTestBase<InnerTypeTest> bt = new BaseTest();
         bt.Foo(1);
+        Debug.Log(bt);
 
         luaenv.DoString(@"
             xlua.hotfix(CS.BaseTest, 'Foo', function(self, p)
                     print('BaseTest', p)
                     base(self):Foo(p)
                 end)
+            xlua.hotfix(CS.BaseTest, 'ToString', function(self)
+                    return '>>>' .. base(self):ToString()
+                end)
         ");
         bt.Foo(2);
+        Debug.Log(bt);
     }
 
     void TestStateful()
@@ -408,3 +440,4 @@ public class HotfixTest2 : MonoBehaviour {
 	
 	}
 }
+

@@ -46,7 +46,7 @@ namespace XLua
         internal int errorFuncRef = -1;
 
 #if THREAD_SAFE || HOTFIX_ENABLE
-        internal static object luaLock = new object();
+        internal /*static*/ object luaLock = new object();
 
         internal object luaEnvLock
         {
@@ -543,6 +543,7 @@ namespace XLua
                         end
                     end)
                 end
+                xlua.private_accessible(cs)
             end
             xlua.getmetatable = function(cs)
                 return xlua.metatable_operation(cs)
@@ -560,7 +561,7 @@ namespace XLua
                     local csobj = t['__csobj']
                     local func = csobj['<>xLuaBaseProxy_'..k]
                     return function(_, ...)
-                         func(csobj, ...)
+                         return func(csobj, ...)
                     end
                 end
             }
