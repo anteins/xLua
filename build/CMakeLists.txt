@@ -34,6 +34,74 @@ MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
 set(LUA_SRC_PATH lua-5.3.5/src)
 set(LUAJIT_SRC_PATH luajit-2.1.0b3/src)
 
+#begin lua-lfs
+set (LFS_SRC lua-lfs/source/lfs.c)
+set_property(
+    SOURCE ${LFS_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lua-lfs/include)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${LFS_SRC})
+#end lua-lfs
+
+#begin lua-blib
+set (BLIB_SRC lua-blib/source/blib.c)
+set_property(
+    SOURCE ${BLIB_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lua-blib/include)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${BLIB_SRC})
+#end lua-blib
+
+#begin lua-rapidjson
+set (RAPIDJSON_SRC lua-rapidjson/source/rapidjson.cpp)
+set_property(
+    SOURCE ${RAPIDJSON_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lua-rapidjson/include)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${RAPIDJSON_SRC})
+#end lua-rapidjson
+
+#begin lua-profobuf
+set (LPB_SRC 
+    lua-protobuf/pb.c
+)
+set_property(
+    SOURCE ${LPB_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC lua-protobuf)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${LPB_SRC})
+#end lua-protobuf
+
+#begin lpeg
+set ( LPEG_SRC
+    lpeg/lpcap.c
+    lpeg/lpcode.c
+    lpeg/lpprint.c
+    lpeg/lptree.c
+    lpeg/lpvm.c
+)
+set_property(
+    SOURCE ${LPEG_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lpeg)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${LPEG_SRC})
+#end lpeg
+
 if (USING_LUAJIT)
 	
     if (APPLE AND NOT IOS)

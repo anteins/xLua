@@ -1,0 +1,4 @@
+LIBRARY blib.dll
+VERSION 1.6
+EXPORTS
+luaopen_blib
