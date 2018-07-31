@@ -57,7 +57,7 @@ namespace XLua
             return ret;
         }
 
-#if UNITY_WSA && !UNITY_EDITOR
+#if (UNITY_WSA && !ENABLE_IL2CPP) && !UNITY_EDITOR
         public static List<Assembly> _assemblies;
         public static List<Assembly> GetAssemblies()
         {
@@ -454,7 +454,7 @@ namespace XLua
             for (int i = 0; i < props.Length; ++i)
             {
                 PropertyInfo prop = props[i];
-                if (prop.Name == "Item" && prop.GetIndexParameters().Length > 0)
+                if (prop.GetIndexParameters().Length > 0)
                 {
                     items.Add(prop);
                 }
@@ -1373,6 +1373,12 @@ namespace XLua
             }
 
             LuaAPI.xlua_pushasciistring(L, path[path.Count -1]);
+            LuaAPI.lua_pushvalue(L, cls_table);
+            LuaAPI.lua_rawset(L, -3);
+            LuaAPI.lua_pop(L, 1);
+
+            LuaAPI.xlua_getglobal(L, "CS");
+            ObjectTranslatorPool.Instance.Find(L).PushAny(L, type);
             LuaAPI.lua_pushvalue(L, cls_table);
             LuaAPI.lua_rawset(L, -3);
             LuaAPI.lua_pop(L, 1);

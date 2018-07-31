@@ -47,11 +47,12 @@ util.hotfix_ex(class, method_name, fix)
 
 和其它配置一样，有两种方式
 
-方式一：直接在类里头打Hotfix标签；
+方式一：直接在类里头打Hotfix标签（不建议，示例只是为了方便演示采取这种方式）；
 
 方式二：在一个static类的static字段或者属性里头配置一个列表。属性可以用于实现的比较复杂的配置，比如根据Namespace做白名单。
 
 ~~~csharp
+//如果涉及到Assembly-CSharp.dll之外的其它dll，如下代码需要放到Editor目录
 public static class HotfixCfg
 {
     [Hotfix]
@@ -80,7 +81,7 @@ Hotfix标签可以设置一些标志位对生成代码及插桩定制化
 
 * Stateless、Stateful
 
-遗留设置，Stateful方式在新版本已经删除，因为这种方式可以用xlua.util.hotfix_state接口达到类似的效果，该接口的使用可以看下HotfixTest2.cs里的示例代码。
+遗留设置，Stateful方式在新版本已经删除，因为这种方式可以用xlua.util.state接口达到类似的效果，该接口的使用可以看下HotfixTest2.cs里的示例代码。
 
 由于没Stateful，默认就是Stateless，所以也没必要设置该标志位。
 
@@ -250,13 +251,12 @@ public class GenericClass<T>
 
 你只能对GenericClass\<double\>，GenericClass\<int\>这些类，而不是对GenericClass打补丁。
 
-另外值得一提的是，要注意泛化类型的命名方式，比如GenericClass\<double\>的命名是GenericClass`1[System.Double]，具体可以看[MSDN](https://msdn.microsoft.com/en-us/library/w3f99sx1.aspx)。
 
 对GenericClass<double>打补丁的实例如下：
 
 ```csharp
 luaenv.DoString(@"
-    xlua.hotfix(CS['GenericClass`1[System.Double]'], {
+    xlua.hotfix(CS.GenericClass(CS.System.Double), {
         ['.ctor'] = function(obj, a)
             print('GenericClass<double>', obj, a)
         end;

@@ -227,7 +227,7 @@ namespace XLua
 #endif
             assemblies = new List<Assembly>();
 
-#if UNITY_WSA && !UNITY_EDITOR
+#if (UNITY_WSA && !ENABLE_IL2CPP) && !UNITY_EDITOR
             var assemblies_usorted = Utils.GetAssemblies();
 #else
             assemblies.Add(Assembly.GetExecutingAssembly());
@@ -373,7 +373,7 @@ namespace XLua
                 }
             }
 
-            throw new InvalidCastException("This type must add to CSharpCallLua: " + delegateType);
+            throw new InvalidCastException("This type must add to CSharpCallLua: " + delegateType.GetFriendlyName());
         }
         Dictionary<int, WeakReference> delegate_bridges = new Dictionary<int, WeakReference>();
         public object CreateDelegateBridge(RealStatePtr L, Type delegateType, int idx)
@@ -587,6 +587,9 @@ namespace XLua
             LuaAPI.xlua_pushasciistring(L, "import_type");
 			LuaAPI.lua_pushstdcallcfunction(L,importTypeFunction);
 			LuaAPI.lua_rawset(L, -3);
+            LuaAPI.xlua_pushasciistring(L, "import_generic_type");
+            LuaAPI.lua_pushstdcallcfunction(L, StaticLuaCallbacks.ImportGenericType);
+            LuaAPI.lua_rawset(L, -3);
             LuaAPI.xlua_pushasciistring(L, "cast");
             LuaAPI.lua_pushstdcallcfunction(L, castFunction);
             LuaAPI.lua_rawset(L, -3);
@@ -604,6 +607,9 @@ namespace XLua
             LuaAPI.lua_rawset(L, -3);
             LuaAPI.xlua_pushasciistring(L, "tofunction");
             LuaAPI.lua_pushstdcallcfunction(L, StaticLuaCallbacks.ToFunction);
+            LuaAPI.lua_rawset(L, -3);
+            LuaAPI.xlua_pushasciistring(L, "get_generic_method");
+            LuaAPI.lua_pushstdcallcfunction(L, StaticLuaCallbacks.GetGenericMethod);
             LuaAPI.lua_rawset(L, -3);
             LuaAPI.xlua_pushasciistring(L, "release");
             LuaAPI.lua_pushstdcallcfunction(L, StaticLuaCallbacks.ReleaseCsObject);
