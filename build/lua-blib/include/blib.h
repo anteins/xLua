@@ -2,13 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DLLExport __declspec(dllexport)
+#ifdef WIN32
+    #define DLLExport __declspec(dllexport)
+#else
+    #define DLLExport 
+#endif
 
 typedef unsigned char uint8_t;
 
-typedef void(_stdcall *LogCallBack)(char* logText);
+#ifdef WIN32
+	typedef void(_stdcall *LogCallBack)(char* logText);
+	LogCallBack UnityDebugLog;
+#endif
 
-LogCallBack UnityDebugLog;
+#define LUA_BLIB_VERSION "1.1"
+
+#define BLIB_MAX(a,b) a>b?a:b
 
 #define W_HEAD(buf) (buf)->buf + (buf)->write_index
 #define R_HEAD(buf) (buf)->buf + (buf)->read_index
@@ -48,7 +57,7 @@ DLLExport int blib_get_channel_windex(lua_State *L, int buf_id);
 
 DLLExport void blib_write(byte_buffer_struct* buf, char* data, int data_length, char* title);
 
-void blib_realloc(byte_buffer_struct * buf, int re_size);
+void blib_realloc(byte_buffer_struct * buf, int buf_id, int re_size);
 
 DLLExport void blib_write_int(byte_buffer_struct * buf, int value);
 

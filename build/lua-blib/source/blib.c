@@ -4,10 +4,6 @@
 
 #include "blib.h"
 
-#define LUA_BLIB_VERSION "1.1"
-
-#define max(a,b) a>b?a:b
-
 // static const void *key = 0;
 
 DLLExport void blib_new(lua_State *L, int init_size, int buf_id)
@@ -59,10 +55,6 @@ DLLExport byte_buffer_struct* blib_get_channel(lua_State *L, int buf_id)
 	lua_pushinteger(L, buf_id);
 	lua_gettable(L, LUA_REGISTRYINDEX);
 	byte_buffer_struct * buf = lua_touserdata(L, -1);
-	if(buf == NULL)
-	{
-		UnityDebugLog("get_from_channel is NULL");
-	}
 	return buf;
 }
 
@@ -126,23 +118,26 @@ DLLExport void blib_write_bool(byte_buffer_struct * buf, char bool_value)
 	blib_write(buf, &bool_value, data_length, "bool");
 }
 
-void blib_realloc(byte_buffer_struct * buf, int re_size)
+void blib_realloc(byte_buffer_struct * buf, int buf_id, int re_size)
 {
 	if(buf != NULL)
 	{
-		UnityDebugLog("realloc~~~\n");
+		// UnityDebugLog("realloc~~~\n");
 		char int_v[4];
-		itoa(buf->init_size, int_v, 4);
+		// itoa(buf->init_size, int_v, 4);
+		sprintf(int_v+4, "%d", buf->init_size);
+
+
 		// memcpy(int_v, &buf->init_size, 4);
-		UnityDebugLog(int_v);
+		// UnityDebugLog(int_v);
 		buf->init_size += re_size;
 
 		char int_v1[4];
-		itoa(buf->init_size, int_v1, 4);
+		// itoa(buf->init_size, int_v1, 4);
+		sprintf(int_v1+4, "%d", buf->init_size);
 		// memcpy(int_v1, &buf->init_size, 4);
-		UnityDebugLog(int_v1);
-
-		UnityDebugLog("realloc~~~ end\n");
+		// UnityDebugLog(int_v1);
+		// UnityDebugLog("realloc~~~ end\n");
 		buf->buf = realloc(buf->buf, buf->init_size);
 	}
 }
@@ -152,7 +147,7 @@ DLLExport void blib_write(byte_buffer_struct* buf, char* data, int data_length, 
 	HEX_LOG(title, data, data_length)
 	if(buf->init_size - buf->write_index < data_length)
 	{
-		blib_realloc(buf, buf->id, max(data_length, 1024));
+		blib_realloc(buf, buf->id, BLIB_MAX(data_length, 1024));
 	}
 	memcpy(W_HEAD(buf), data, data_length);
 	buf->write_index += data_length;
@@ -205,11 +200,12 @@ DLLExport void blib_read(byte_buffer_struct * buf, char* data, int data_length, 
 	//HEX_LOG(title, data, data_length);
 }
 
-// 注册日志回调函数
+#ifdef WIN32
 DLLExport void set_display_log(LogCallBack DisplayLog)
 {
 	UnityDebugLog = DisplayLog;
 }
+#endif
 
 //------------------------------------------ lua api --------------------------------------------
 // static int new_buf(lua_State *L)
@@ -251,7 +247,7 @@ static int write_string(lua_State *L)
 {
 	byte_buffer_struct *buf = (byte_buffer_struct *)lua_touserdata(L, 1); // [blib, string]
 	size_t len = 0;
-	char* value = lua_tolstring(L, 2, &len);
+	const char* value = lua_tolstring(L, 2, &len);
 	blib_write_string(buf, value);
 	return 0;
 }
